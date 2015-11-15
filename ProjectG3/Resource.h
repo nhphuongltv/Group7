@@ -13,6 +13,13 @@
 #define IDI_PROJECTG3			107
 #define IDI_SMALL				108
 #define IDC_PROJECTG3			109
+#define IDC_COMBOBOX_VOICE		5000
+#define IDC_SLIDEBAR_VOLUME		5001
+#define IDC_SLIDEBAR_SPEED		5002
+
+#define MYWM_SPEAK	10000
+#define MYWM_STOP	10001
+
 #define IDC_MYICON				2
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1

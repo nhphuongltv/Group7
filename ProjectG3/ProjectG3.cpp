@@ -1,9 +1,16 @@
-// ProjectG3.cpp : Defines the entry point for the application.
+﻿// ProjectG3.cpp : Defines the entry point for the application.
 //
 
 #include "stdafx.h"
 #include "ProjectG3.h"
 #include <CommCtrl.h>
+#include <Windowsx.h>
+#include "AppController.h"
+
+//
+#include <io.h> 
+#include <fcntl.h>
+#include <iostream>
 
 #define MAX_LOADSTRING 100
 
@@ -12,18 +19,12 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
-// My variable
-HWND hVoiceComboBox, hVolSlideBar, hSpeedSlideBar;
-
-// My function
-void CreateControl(HWND);
-void setComboBoxData(TCHAR *strVoice[], int n);
-
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+void initConsole();
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -32,6 +33,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+	initConsole(); //Console for debugging
 
  	// TODO: Place code here.
 	MSG msg;
@@ -135,12 +137,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
-	TCHAR *str[] = {L"1", L"2"};
+
 	switch (message)
 	{
 	case WM_CREATE:
-		CreateControl(hWnd);
-		setComboBoxData(str, 2);
+		AppController::getInstance()->Initialize(hWnd, hInst); //Store hWnd, hInst to process
+		AppController::getInstance()->initApp(); //Init App
 		break;
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
@@ -154,18 +156,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
+		case IDC_COMBOBOX_VOICE: //Combobox notification
+			if (wmEvent == CBN_SELCHANGE)
+			{
+				AppController::getInstance()->OnChangeComboBoxVoice();
+			}
+			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
+
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code here...
 		EndPaint(hWnd, &ps);
 		break;
+
+	//https://msdn.microsoft.com/en-us/library/windows/desktop/bb760149(v=vs.85).aspx#tkb_notifications
+	case WM_HSCROLL: //Trackbar changing notifications
+	{
+					   int iPos = 0;
+					   HWND hTrackBar = (HWND)lParam;
+					   if (LOWORD(wParam) == TB_ENDTRACK)
+					   {
+						   iPos = SendMessage(hTrackBar, TBM_GETPOS, 0, 0);
+						   AppController::getInstance()->OnChangeTrackBar(hTrackBar, iPos);
+						   std::cout << iPos << std::endl;
+					   }
+	}
+		break;
 	case WM_DESTROY:
+		AppController::getInstance()->exitApp();
 		PostQuitMessage(0);
 		break;
+	case MYWM_SPEAK: //Event speak a text called from dll hook
+	{
+						 WCHAR* text = (WCHAR*)lParam;
+						 std::cout << text << std::endl;
+						 AppController::getInstance()->Speak(text);
+						 break;
+	}
+	case MYWM_STOP: //Stop speaking
+	{
+					  AppController::getInstance()->Stop();
+					  break;
+	}
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -192,26 +229,21 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	return (INT_PTR)FALSE;
 }
 
-void CreateControl(HWND hWnd)
+void initConsole()
 {
-	CreateWindow(L"Static", L"Voice:", WS_CHILD | WS_VISIBLE, 20, 20, 75, 20, hWnd, NULL, hInst, NULL);
-	hVoiceComboBox = CreateWindow(L"COMBOBOX", L"", CBS_DROPDOWN | WS_CHILD | WS_VISIBLE, 100, 20, 200, 100, hWnd, NULL, hInst, NULL);
+	AllocConsole();
 
-	CreateWindow(L"Static", L"Volume:", WS_CHILD | WS_VISIBLE, 20, 60, 75, 20, hWnd, NULL, hInst, NULL);
-	hVolSlideBar = CreateWindow(TRACKBAR_CLASS, L"", WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS, 100, 55, 200, 30, hWnd, (HMENU)3, NULL, NULL);
-	SendMessage(hVolSlideBar, TBM_SETRANGE, (WPARAM)TRUE, (LPARAM)MAKELONG(0, 100));
-	SendMessage(hVolSlideBar, TBM_SETPOS, (WPARAM)TRUE, (LPARAM)50);
+	HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
+	int hCrt = _open_osfhandle((long)handle_out, _O_TEXT);
+	FILE* hf_out = _fdopen(hCrt, "w");
+	setvbuf(hf_out, NULL, _IONBF, 1);
+	*stdout = *hf_out;
 
-	CreateWindow(L"Static", L"Speed:", WS_CHILD | WS_VISIBLE, 20, 100, 75, 20, hWnd, NULL, hInst, NULL);
-	hSpeedSlideBar = CreateWindow(TRACKBAR_CLASS, L"", WS_CHILD | WS_VISIBLE | TBS_AUTOTICKS, 100, 95, 200, 30, hWnd, (HMENU)3, NULL, NULL);
-	SendMessage(hSpeedSlideBar, TBM_SETRANGE, (WPARAM)TRUE, (LPARAM)MAKELONG(0, 10));
-	SendMessage(hSpeedSlideBar, TBM_SETPOS, (WPARAM)TRUE, (LPARAM)5);
-}
+	HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
+	hCrt = _open_osfhandle((long)handle_in, _O_TEXT);
+	FILE* hf_in = _fdopen(hCrt, "r");
+	setvbuf(hf_in, NULL, _IONBF, 128);
+	*stdin = *hf_in;
 
-void setComboBoxData(TCHAR *strVoice[], int n)
-{
-	for (int i = 0; i < n; i++)
-	{
-		SendMessage(hVoiceComboBox, CB_ADDSTRING, (WPARAM)MAX_LOADSTRING, (LPARAM)strVoice[i]);
-	}
+	std::cout << "Console for debugging" << std::endl;
 }

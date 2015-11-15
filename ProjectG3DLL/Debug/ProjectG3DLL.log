@@ -1,0 +1,17 @@
+﻿Build started 11/15/2015 6:46:46 PM.
+     1>Project "D:\Workspace\Github\Group7\ProjectG3DLL\ProjectG3DLL.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D PROJECTG3DLL_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\ProjectG3DLL.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ProjectG3DLL.cpp
+         ProjectG3DLL.cpp
+     1>d:\workspace\github\group7\projectg3dll\projectg3dll.cpp(62): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\string.h(294) : see declaration of 'wcscpy'
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Workspace\Github\Group7\Debug\ProjectG3DLL.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /DEF:"ProjectG3DLL.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Workspace\Github\Group7\Debug\ProjectG3DLL.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Workspace\Github\Group7\Debug\ProjectG3DLL.lib" /MACHINE:X86 /DLL Debug\dllmain.obj
+         Debug\ProjectG3DLL.obj
+         Debug\stdafx.obj
+         ProjectG3DLL.vcxproj -> D:\Workspace\Github\Group7\Debug\ProjectG3DLL.dll
+     1>Done Building Project "D:\Workspace\Github\Group7\ProjectG3DLL\ProjectG3DLL.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.41

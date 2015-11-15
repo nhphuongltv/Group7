@@ -30,12 +30,27 @@
     <ClInclude Include="ProjectG3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SAPI\sapi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TTSLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProjectG3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TTSLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,5 +66,10 @@
     <Image Include="ProjectG3.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="SAPI\sapi.lib">
+      <Filter>Source Files</Filter>
+    </Library>
   </ItemGroup>
 </Project>
