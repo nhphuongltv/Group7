@@ -146,6 +146,7 @@ void AppController::OnChangeTrackBar(HWND hTrackBar, int pos)
 	}
 	else if (hTrackBar == hSpeedSlideBar)
 	{
+		rate = pos;
 		speaker.SetRate(rate - 10); //-10 cause rate from -10 to 10
 	}
 }
